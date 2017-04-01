@@ -38,10 +38,11 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text #message from user
-
+    textlength=len(text)
+    texttype=type(text)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=text+' ,Haha,3.5 is OK!')) #reply the same message from user
+        TextSendMessage(text=text+' ,Haha,3.5 is OK!'+texttype+textlength)) #reply the same message from user
     
 
 import os
