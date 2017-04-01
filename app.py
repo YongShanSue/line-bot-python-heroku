@@ -41,7 +41,7 @@ def handle_text_message(event):
 
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=text)) #reply the same message from user
+        TextSendMessage(text=text+',too.')) #reply the same message from user
     
 
 import os
