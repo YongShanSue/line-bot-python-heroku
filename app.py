@@ -198,6 +198,8 @@ def handle_text_message(event):
     elif text ==ques3:
         text=ans3
     else:
+        condition=0
+        '''
         query = text
 
         result = {}
@@ -209,6 +211,7 @@ def handle_text_message(event):
         else:
             text=ans4
             condition=2
+        '''
         num=random.randint(1,10)
         if condition==1  :      #happyreply
             if num==1:
