@@ -69,7 +69,50 @@ sadreply8=u'多跟我說說，我是你永遠的垃圾桶。'
 sadreply9=u'不要排斥不快樂，是它讓你了解快樂的珍貴。'
 sadreply10=u'現在出門去運動吧！會讓你心情變好。'
 
+##ML
+with open('pos_chinese.txt', 'r') as infile:
+    pos_tweets = infile.readlines()
 
+with open('neg_chinese.txt', 'r') as infile:
+    neg_tweets = infile.readlines()
+
+# use 1 for positive sentiment, 0 for negative
+y = np.concatenate((np.ones(len(pos_tweets)), np.zeros(len(neg_tweets))))
+
+x_train, x_test, y_train, y_test = train_test_split(np.concatenate((pos_tweets, neg_tweets)), y, test_size=0.1)
+
+
+x_train = cleanText(x_train)
+x_test = cleanText(x_test)
+
+n_dim = 300
+#Initialize model and build vocab
+imdb_w2v = Word2Vec(size=n_dim, min_count=10)
+imdb_w2v.build_vocab(x_train)
+
+#Train the model over train_reviews (this may take several minutes)
+imdb_w2v.train(x_train)
+imdb_w2v.save('chsen.model.bin')
+
+#model = KeyedVectors.load('chsen.model.bin')
+train_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_train])
+train_vecs = scale(train_vecs)
+
+#Train word2vec on test tweets
+model.train(x_test)
+
+#Build test tweet vectors then scale
+test_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_test])
+test_vecs = scale(test_vecs)
+
+#Use classification algorithm (i.e., Stochastic Logistic Regression) on training set, then assess model performance on test set
+
+
+lr = SGDClassifier(loss='log', penalty='l2')
+#print(train_vecs)
+#print(y_train)
+lr.fit(train_vecs, y_train)
+#print(lr)   
 def test_sentance(imdb_w2v,lr,input_sentence):
 
     # jieba custom setting.
@@ -124,50 +167,7 @@ def buildWordVector(imdb_w2v,text, size):
     if count != 0:
         vec /= count
     return vec 
-##ML
-with open('pos_chinese.txt', 'r') as infile:
-    pos_tweets = infile.readlines()
 
-with open('neg_chinese.txt', 'r') as infile:
-    neg_tweets = infile.readlines()
-
-# use 1 for positive sentiment, 0 for negative
-y = np.concatenate((np.ones(len(pos_tweets)), np.zeros(len(neg_tweets))))
-
-x_train, x_test, y_train, y_test = train_test_split(np.concatenate((pos_tweets, neg_tweets)), y, test_size=0.1)
-
-
-x_train = cleanText(x_train)
-x_test = cleanText(x_test)
-
-n_dim = 300
-#Initialize model and build vocab
-imdb_w2v = Word2Vec(size=n_dim, min_count=10)
-imdb_w2v.build_vocab(x_train)
-
-#Train the model over train_reviews (this may take several minutes)
-imdb_w2v.train(x_train)
-imdb_w2v.save('chsen.model.bin')
-
-#model = KeyedVectors.load('chsen.model.bin')
-train_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_train])
-train_vecs = scale(train_vecs)
-
-#Train word2vec on test tweets
-model.train(x_test)
-
-#Build test tweet vectors then scale
-test_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_test])
-test_vecs = scale(test_vecs)
-
-#Use classification algorithm (i.e., Stochastic Logistic Regression) on training set, then assess model performance on test set
-
-
-lr = SGDClassifier(loss='log', penalty='l2')
-#print(train_vecs)
-#print(y_train)
-lr.fit(train_vecs, y_train)
-#print(lr)   
 
 
 @app.route("/callback", methods=['POST'])
