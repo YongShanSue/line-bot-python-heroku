@@ -51,7 +51,7 @@ def handle_text_message(event):
     #texttype=type(text)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text+str(len(text) + str(len(ques1)) )  ) #reply the same message from user
+        TextSendMessage(text+str(len(text)) + str(len(ques1)) )  ) #reply the same message from user
     
 
 import os
