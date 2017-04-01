@@ -48,6 +48,6 @@ def handle_text_message(event):
 
 import os
 if __name__ == "__main__":
-    ques1=codecs.open("ques1.txt", "r", "utf-8")
-    ans1=codecs.open("ans1.txt", "r", "utf-8")
+    ques1=codecs.open("src/ques1.txt", "r", "utf-8")
+    ans1=codecs.open("src/ans1.txt", "r", "utf-8")
     app.run(host='0.0.0.0',port=os.environ['PORT'])
