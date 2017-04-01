@@ -45,13 +45,13 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text #message from user
-    if text is ques1:
+    if text == ques1:
         text=ans1
     #textlength=len(text)
     #texttype=type(text)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text+str(len(text)) + str(len(ques1)) )  ) #reply the same message from user
+        TextSendMessage(text+str(type(text)) + str(type(ques1)) )  ) #reply the same message from user
     
 
 import os
