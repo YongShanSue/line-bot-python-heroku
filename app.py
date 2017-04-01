@@ -40,12 +40,12 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text #message from user
-    text=ans1
+    #text=ans1
     #textlength=len(text)
     #texttype=type(text)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(u(text))  ) #reply the same message from user
+        TextSendMessage(text)  ) #reply the same message from user
     
 
 import os
