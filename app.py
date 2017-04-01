@@ -17,6 +17,8 @@ line_bot_api = LineBotApi('+YrlgJ1c5YOs8NGIOUOPN2Z/Ya6zmtW2mlrynoKWm64OuqFFYIJ6G
 
 
 handler = WebhookHandler('a29dfcc21df2547b09392b7f0a9cabbc') #Your Channel Secret
+ques1=codecs.open("src/ques1.txt", "r", "utf-8")
+ans1=codecs.open("src/ans1.txt", "r", "utf-8")
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -48,6 +50,4 @@ def handle_text_message(event):
 
 import os
 if __name__ == "__main__":
-    ques1=codecs.open("src/ques1.txt", "r", "utf-8")
-    ans1=codecs.open("src/ans1.txt", "r", "utf-8")
     app.run(host='0.0.0.0',port=os.environ['PORT'])
