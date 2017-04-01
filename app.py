@@ -25,6 +25,12 @@ ans1=myansfile.read()
 myquesfile.close()
 myansfile.close()
 
+ques2=u'我累了，我沒辦法熬過這一次'
+ans2=u'相信我，你可以的！我建議你可以先看看【'+'TED'+u'】國際勵志大師安東尼．羅賓：'+'Why we do what we do'+u'。'+'http://www.knowledger.info/2014/07/29/tony-robbins-in-a-tedtalk-why-we-do-what-we-do/'+u'。'
+
+
+
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -47,11 +53,13 @@ def handle_text_message(event):
     text = event.message.text #message from user
     if text == ques1:
         text=ans1
+    elif text ==ques2:
+        text=ans2
     #textlength=len(text)
     #texttype=type(text)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text+str(type(text)) + str(type(ques1)) )  ) #reply the same message from user
+        TextSendMessage(text)  ) #reply the same message from user
     
 
 import os
