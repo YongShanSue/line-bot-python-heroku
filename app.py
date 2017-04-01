@@ -83,7 +83,7 @@ def handle_text_message(event):
     else:
         condition=0
         num=random.randint(1,10)
-        if condition==1        #happyreply
+        if condition==1  :      #happyreply
             if num==1:
                 text=happyreply1
             elif num==2:
