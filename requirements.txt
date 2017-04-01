@@ -1,2 +1,9 @@
 line-bot-sdk
 flask
+gensim
+sklearn
+numpy
+matplotlib
+jieba
+
+

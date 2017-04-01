@@ -12,6 +12,21 @@ from linebot.models import (
 )
 import codecs
 import random
+
+#ml
+import operator
+import io
+from gensim.models.word2vec import Word2Vec
+from gensim.models.keyedvectors import KeyedVectors
+from sklearn.preprocessing import scale
+import numpy as np
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+import jieba
+from sklearn.cross_validation import train_test_split
+from sklearn.linear_model import SGDClassifier
+
+
 app = Flask(__name__)
 
 line_bot_api = LineBotApi('+YrlgJ1c5YOs8NGIOUOPN2Z/Ya6zmtW2mlrynoKWm64OuqFFYIJ6Gy90AwyTZmg9bTPWUAa8bIA+tJfOgw1ekKR3/RUukTJw+9ppv08wBIF83Hx2FRqaKdcyZcUx2viZe8DXDc6l5ftaAyUNSt7cQQdB04t89/1O/w1cDnyilFU=') #Your Channel Access Token
@@ -30,7 +45,7 @@ ques2=u'我累了，我沒辦法熬過這一次'
 ans2=u'相信我，你可以的！我建議你可以先看看【'+'TED'+u'】國際勵志大師安東尼．羅賓：'+'Why we do what we do'+u'。'+'http://www.knowledger.info/2014/07/29/tony-robbins-in-a-tedtalk-why-we-do-what-we-do/'+u'。'
 ques3=u'或許一了百了比較輕鬆'
 ans3=u'你先可以撥打衛生福利部'+'24'+u'小時安心專線：'+'0800-788-995'+u'、國際生命線協會'+'24'+u'小時電話協談：'+'1995'+u'聊聊看！'
-ans4=u'洗洗睡比較快'
+ans4=u'多聊聊你的故事'
 
 happyreply1=u'太棒了！我真是為你開心！'
 happyreply2=u'好事可以多跟人分享，快樂會加倍喔！'
@@ -54,6 +69,107 @@ sadreply8=u'多跟我說說，我是你永遠的垃圾桶。'
 sadreply9=u'不要排斥不快樂，是它讓你了解快樂的珍貴。'
 sadreply10=u'現在出門去運動吧！會讓你心情變好。'
 
+
+def test_sentance(imdb_w2v,lr,input_sentence):
+
+    # jieba custom setting.
+    jieba.set_dictionary('dict.txt')
+
+    # load stopwords set
+    stopwordset = set()
+    with io.open('stopwords.txt','r',encoding='utf-8') as sw:
+        for line in sw:
+            stopwordset.add(line.strip('\n'))
+    word_list = jieba.cut(input_sentence, cut_all=False)
+    pos_result = 0
+    neg_result = 0
+    for word in word_list:
+        if word not in stopwordset:
+            if word in imdb_w2v.wv.vocab:
+                vector = imdb_w2v.wv[word]
+                #print(vector)
+                ans = lr.predict([vector])
+                anslist = ans.tolist()
+                #print(ans)
+                if(anslist[0] == 1):
+                    print(word)
+                    print(anslist[0])
+                    print("pos_result += 1")
+                    pos_result = pos_result + 1
+                elif(anslist[0] == 0):
+                    print(word)
+                    print(anslist[0])
+                    print("neg_result += 1")
+                    neg_result = neg_result + 1;
+                else:
+                    print("do nothing")
+                    continue
+    return {'pos':pos_result,'neg':neg_result}
+
+# Do some very minor text preprocessing
+def cleanText(corpus):
+    corpus = [z.lower().replace('\n','').split() for z in corpus]
+    return corpus
+
+# build word vector for training set by using the average value of all word vectors in the tweet, then scale
+def buildWordVector(imdb_w2v,text, size):
+    vec = np.zeros(size).reshape((1, size))
+    count = 0.
+    for word in text:
+        try:
+            vec += imdb_w2v[word].reshape((1, size))
+            count += 1.
+        except KeyError:
+            continue 
+    if count != 0:
+        vec /= count
+    return vec 
+##ML
+with open('pos_chinese.txt', 'r') as infile:
+    pos_tweets = infile.readlines()
+
+with open('neg_chinese.txt', 'r') as infile:
+    neg_tweets = infile.readlines()
+
+# use 1 for positive sentiment, 0 for negative
+y = np.concatenate((np.ones(len(pos_tweets)), np.zeros(len(neg_tweets))))
+
+x_train, x_test, y_train, y_test = train_test_split(np.concatenate((pos_tweets, neg_tweets)), y, test_size=0.1)
+
+
+x_train = cleanText(x_train)
+x_test = cleanText(x_test)
+
+n_dim = 300
+#Initialize model and build vocab
+imdb_w2v = Word2Vec(size=n_dim, min_count=10)
+imdb_w2v.build_vocab(x_train)
+
+#Train the model over train_reviews (this may take several minutes)
+imdb_w2v.train(x_train)
+imdb_w2v.save('chsen.model.bin')
+
+#model = KeyedVectors.load('chsen.model.bin')
+train_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_train])
+train_vecs = scale(train_vecs)
+
+#Train word2vec on test tweets
+model.train(x_test)
+
+#Build test tweet vectors then scale
+test_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_test])
+test_vecs = scale(test_vecs)
+
+#Use classification algorithm (i.e., Stochastic Logistic Regression) on training set, then assess model performance on test set
+
+
+lr = SGDClassifier(loss='log', penalty='l2')
+#print(train_vecs)
+#print(y_train)
+lr.fit(train_vecs, y_train)
+#print(lr)   
+
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -74,6 +190,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text #message from user
+    condition = -1
     if text == ques1:
         text=ans1
     elif text ==ques2:
@@ -81,7 +198,17 @@ def handle_text_message(event):
     elif text ==ques3:
         text=ans3
     else:
-        condition=0
+        query = text
+
+        result = {}
+        result = test_sentance(imdb_w2v,lr,query)
+        if(result['pos'] > result['neg']):
+            condition=1
+        elif(result['neg'] > result['pos']):
+            condition=0
+        else:
+            text=ans4
+            condition=2
         num=random.randint(1,10)
         if condition==1  :      #happyreply
             if num==1:
@@ -104,7 +231,7 @@ def handle_text_message(event):
                 text=happyreply9
             else:
                 text=happyreply10
-        else:                   #sadreply
+        elif condition==0 :                   #sadreply
             if num==1:
                 text=sadreply1
             elif num==2:
@@ -127,7 +254,7 @@ def handle_text_message(event):
                 text=sadreply10
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text)  ) #reply the same message from user
+        TextSendMessage(text+str(condition))  ) #reply the same message from user
     
 
 import os
