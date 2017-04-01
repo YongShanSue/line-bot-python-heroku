@@ -10,7 +10,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
-
+import codecs
 app = Flask(__name__)
 
 line_bot_api = LineBotApi('+YrlgJ1c5YOs8NGIOUOPN2Z/Ya6zmtW2mlrynoKWm64OuqFFYIJ6Gy90AwyTZmg9bTPWUAa8bIA+tJfOgw1ekKR3/RUukTJw+9ppv08wBIF83Hx2FRqaKdcyZcUx2viZe8DXDc6l5ftaAyUNSt7cQQdB04t89/1O/w1cDnyilFU=') #Your Channel Access Token
@@ -38,6 +38,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text #message from user
+    text=ans1
     textlength=len(text)
     texttype=type(text)
     line_bot_api.reply_message(
@@ -47,4 +48,6 @@ def handle_text_message(event):
 
 import os
 if __name__ == "__main__":
+    ques1=codecs.open("ques1.txt", "r", "utf-8")
+    ans1=codecs.open("ans1.txt", "r", "utf-8")
     app.run(host='0.0.0.0',port=os.environ['PORT'])
