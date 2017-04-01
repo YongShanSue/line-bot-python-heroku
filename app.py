@@ -27,9 +27,9 @@ myansfile.close()
 
 ques2=u'我累了，我沒辦法熬過這一次'
 ans2=u'相信我，你可以的！我建議你可以先看看【'+'TED'+u'】國際勵志大師安東尼．羅賓：'+'Why we do what we do'+u'。'+'http://www.knowledger.info/2014/07/29/tony-robbins-in-a-tedtalk-why-we-do-what-we-do/'+u'。'
-
-
-
+ques3=u'或許一了百了比較輕鬆'
+ans3=u'你先可以撥打衛生福利部'+'24'+u'小時安心專線：'+'0800-788-995'+u'、國際生命線協會'+'24'+u'小時電話協談：'+'1995'+u'聊聊看！'
+ans4=u'洗洗睡比較快'
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -55,6 +55,10 @@ def handle_text_message(event):
         text=ans1
     elif text ==ques2:
         text=ans2
+    elif text ==ques3:
+        text=ans3
+    else:
+        text=ans4
     #textlength=len(text)
     #texttype=type(text)
     line_bot_api.reply_message(
