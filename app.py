@@ -42,7 +42,7 @@ def handle_text_message(event):
     texttype=type(text)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=text+' ,Haha,3.5 is OK!'+texttype+textlength)) #reply the same message from user
+        TextSendMessage(text=text)) #reply the same message from user
     
 
 import os
