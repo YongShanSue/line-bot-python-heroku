@@ -215,7 +215,7 @@ def handle_text_message(event):
         else:
             text=ans4
             condition=2
-            text='No special emotion'+text
+            text='(No special emotion)'+text
         num=random.randint(1,10)
         if condition==1  :      #happyreply
             if num==1:
