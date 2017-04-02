@@ -263,7 +263,7 @@ def handle_text_message(event):
             text= '(Sad Emotion)'+text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text  ) #reply the same message from user
+        TextSendMessage(text  )) #reply the same message from user
     
 
 import os
