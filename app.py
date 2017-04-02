@@ -20,8 +20,8 @@ from gensim.models.word2vec import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from sklearn.preprocessing import scale
 import numpy as np
-from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
+#from sklearn.manifold import TSNE
+#import matplotlib.pyplot as plt
 import jieba
 from sklearn.cross_validation import train_test_split
 from sklearn.linear_model import SGDClassifier
