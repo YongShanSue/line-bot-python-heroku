@@ -114,14 +114,14 @@ imdb_w2v.train(x_train)
 imdb_w2v.save('chsen.model.bin')
 
 #model = KeyedVectors.load('chsen.model.bin')
-train_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_train])
+train_vecs = np.concatenate([buildWordVector(imdb_w2v,z, n_dim) for z in x_train])
 train_vecs = scale(train_vecs)
 
 #Train word2vec on test tweets
-model.train(x_test)
+imdb_w2v.train(x_test)
 
 #Build test tweet vectors then scale
-test_vecs = np.concatenate([buildWordVector(model,z, n_dim) for z in x_test])
+test_vecs = np.concatenate([buildWordVector(imdb_w2v,z, n_dim) for z in x_test])
 test_vecs = scale(test_vecs)
 
 #Use classification algorithm (i.e., Stochastic Logistic Regression) on training set, then assess model performance on test set
