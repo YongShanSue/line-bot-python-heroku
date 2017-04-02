@@ -196,11 +196,11 @@ def handle_text_message(event):
     text = event.message.text #message from user
     condition = -1
     if text == ques1:
-        text=ans1
+        text='(Sad Emotion)'+ans1
     elif text ==ques2:
-        text=ans2
+        text='(Sad Emotion)'+ans2
     elif text ==ques3:
-        text=ans3
+        text='(Sad Emotion)'+ans3
     else:
         
         
@@ -215,7 +215,7 @@ def handle_text_message(event):
         else:
             text=ans4
             condition=2
-        
+            text='No special emotion'+text
         num=random.randint(1,10)
         if condition==1  :      #happyreply
             if num==1:
@@ -238,6 +238,7 @@ def handle_text_message(event):
                 text=happyreply9
             else:
                 text=happyreply10
+            text= '(Happy Emotion)'+text
         elif condition==0 :                   #sadreply
             if num==1:
                 text=sadreply1
@@ -259,9 +260,10 @@ def handle_text_message(event):
                 text=sadreply9
             else:
                 text=sadreply10
+            text= '(Sad Emotion)'+text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text+str(condition))  ) #reply the same message from user
+        TextSendMessage(text  ) #reply the same message from user
     
 
 import os
