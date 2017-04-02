@@ -69,6 +69,25 @@ sadreply8=u'多跟我說說，我是你永遠的垃圾桶。'
 sadreply9=u'不要排斥不快樂，是它讓你了解快樂的珍貴。'
 sadreply10=u'現在出門去運動吧！會讓你心情變好。'
 
+# Do some very minor text preprocessing
+def cleanText(corpus):
+    corpus = [z.lower().replace('\n','').split() for z in corpus]
+    return corpus
+
+# build word vector for training set by using the average value of all word vectors in the tweet, then scale
+def buildWordVector(imdb_w2v,text, size):
+    vec = np.zeros(size).reshape((1, size))
+    count = 0.
+    for word in text:
+        try:
+            vec += imdb_w2v[word].reshape((1, size))
+            count += 1.
+        except KeyError:
+            continue 
+    if count != 0:
+        vec /= count
+    return vec 
+
 ##ML
 with open('pos_chinese.txt', 'r') as infile:
     pos_tweets = infile.readlines()
@@ -113,6 +132,8 @@ lr = SGDClassifier(loss='log', penalty='l2')
 #print(y_train)
 lr.fit(train_vecs, y_train)
 #print(lr)   
+
+
 def test_sentance(imdb_w2v,lr,input_sentence):
 
     # jieba custom setting.
@@ -149,24 +170,7 @@ def test_sentance(imdb_w2v,lr,input_sentence):
                     continue
     return {'pos':pos_result,'neg':neg_result}
 
-# Do some very minor text preprocessing
-def cleanText(corpus):
-    corpus = [z.lower().replace('\n','').split() for z in corpus]
-    return corpus
 
-# build word vector for training set by using the average value of all word vectors in the tweet, then scale
-def buildWordVector(imdb_w2v,text, size):
-    vec = np.zeros(size).reshape((1, size))
-    count = 0.
-    for word in text:
-        try:
-            vec += imdb_w2v[word].reshape((1, size))
-            count += 1.
-        except KeyError:
-            continue 
-    if count != 0:
-        vec /= count
-    return vec 
 
 
 
